@@ -3,7 +3,7 @@ let resolution = 200
 let canvasSize = 800
 
 let cutOff = 0.6
-let noiseScale = 0.04
+let noiseScale_height = 0.04
 
 function setup() {
   createCanvas(canvasSize, canvasSize);
@@ -19,7 +19,9 @@ function setup() {
       // } else {
       //   let e = 0;
       // }
-      tiles[x][y] = new Tile(x,y, noise(noiseScale*x, noiseScale*y) * min(pow(1.7*(sin(PI*x/(resolution))+1)*(sin(PI*y/(resolution))+1)/4,6 )-0.45, 1), 0);
+      let mask = min(pow(1.7*(sin(PI*x/(resolution))+1)*(sin(PI*y/(resolution))+1)/4,6 )-0.45,1)
+      tiles[x][y] = new Tile(x,y, noise(noiseScale_height*x, noiseScale_height*y)*mask,
+       noise(noiseScale*x, noiseScale*y)*mask,(cos(PI*(y-resolution/2)/(resolution/2))+1)/2);
     }
   }
 }
@@ -37,11 +39,12 @@ function draw() {
 
 
 class Tile {
-  constructor(x, y, h, p) {
+  constructor(x, y, h, p, t) {
     this.x = x;
     this.y = y;
     this.height = h;
     this.perc = p;
+    this.temp = t;
   }
 
   show(tileSize) {
