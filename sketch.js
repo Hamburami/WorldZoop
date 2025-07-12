@@ -1,10 +1,15 @@
-let tiles = [];
-let resolution = 200
+let tiles    = [];
+let cultures = [];
+// let states   = [];
+
+let resolution = 800
 let canvasSize = 800
 
 let cutOff = 0.56
-let noiseScale_height = 0.04
-let noiseScale = 0.2
+let noiseScale_height = 0.01
+let noiseScale_perc   = 0.1
+
+// const stepInterval = 1
 
 
 function setup() {
@@ -21,11 +26,18 @@ function setup() {
       // } else {
       //   let e = 0;
       // }
-      let mask = min(pow(1.7*(sin(PI*x/(resolution))+1)*(sin(PI*y/(resolution))+1)/4,6 )-0.45,1);
-      tiles[x][y] = new Tile(x,y, 
-        noise(noiseScale_height*x, noiseScale_height*y)*mask,
-       noise(noiseScale*x, noiseScale*y)*mask, // 
-       (cos(PI*(y-resolution/2)/(resolution/2))+1)/2);
+      let mask   = min(pow(1.7*(sin(PI*x/(resolution))+1)*(sin(PI*y/(resolution))+1)/4,6 )-0.45,1);
+      let height = noise(noiseScale_height*x, noiseScale_height*y)*mask;
+      let perc   = noise(noiseScale_perc*x, noiseScale_perc*y)*mask;
+      let temp   = (cos(PI*(y-resolution/2)/(resolution/2))+1)/2;
+      let pop = height*perc*temp;
+      if (height > cutOff -0.05) {
+        pop = pop * 1;
+      } else {
+        pop = pop * 0;
+      }
+
+      tiles[x][y] = new Tile(x,y, height, perc,temp,pop);
     }
   }
 }
@@ -37,18 +49,20 @@ function draw() {
   for (let x = 0; x <= resolution; x++) {
     for (let y = 0; y <= resolution; y++) {
       tiles[x][y].show(canvasSize/resolution);
+      // tiles[x][y].show(1)
     }
   }
 }
 
 
+
 class Tile {
-  constructor(x, y, h, p, t) {
-    this.x = x;
-    this.y = y;
-    this.height = h;
-    this.perc = p;
-    this.temp = t;
+  constructor(x, y, h, p, t, pop) {
+    this.x           = x;
+    this.y           = y;
+    this.height      = h;
+    this.perc        = p;
+    this.temp        = t;
 
     // climate determination
     if (this.temp < 0.2)
@@ -86,6 +100,8 @@ class Tile {
         this.climate = 'mountain_peak'
       }
     }
+
+    this.population  = pop;
   }
 
   show(tileSize) {
@@ -125,9 +141,34 @@ class Tile {
 
     }
     
-    // fill(color(this.height*255,0,0));
+    // fill(color(this.population*200,0,0, 100));
     // use the tile’s own coordinates
     rect(this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+
   }
 }
 
+// class CultureClass {
+//   constructor(culture) {
+//     this.culture = culture;
+
+//   }
+// }
+
+// class TimeStepClass {
+//   constructor(year) {
+//     this.year = year
+//   }
+
+//   culture = new CultureClass()
+
+//   iterate() {
+    
+//   }
+
+//   generateCity() {
+//     if 
+//   }
+
+
+// }
