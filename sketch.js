@@ -1,7 +1,9 @@
 let tiles = [];
-let noiseScale = 0.01
 let resolution = 200
 let canvasSize = 800
+
+let cutOff = 0.6
+let noiseScale = 0.04
 
 function setup() {
   createCanvas(canvasSize, canvasSize);
@@ -17,7 +19,7 @@ function setup() {
       // } else {
       //   let e = 0;
       // }
-      tiles[x][y] = new Tile(x,y,pow(1.3*(sin(PI*x/(resolution))+1)*(sin(PI*y/(resolution))+1)/4,6), 0);
+      tiles[x][y] = new Tile(x,y, noise(noiseScale*x, noiseScale*y) * min(pow(1.7*(sin(PI*x/(resolution))+1)*(sin(PI*y/(resolution))+1)/4,6 )-0.45, 1), 0);
     }
   }
 }
@@ -33,7 +35,6 @@ function draw() {
   }
 }
 
-let cutOff = 0.5
 
 class Tile {
   constructor(x, y, h, p) {
@@ -44,20 +45,14 @@ class Tile {
   }
 
   show(tileSize) {
-    // if (this.height > cutOff) {
-    //   fill(color("green"));
-    // } else if (this.height > cutOff -0.05) {
-    //   fill(color("tan"));
-    // } else {
-    //   fill(color("blue"));
-    // }
-    fill(color(this.height*255,0,0));
-    if (0.99 < this.height && 1.01 > this.height) {
-      fill(color('green'));
-    } 
-    if (this.height < 0.05){
-      fill(color('blue'));
+    if (this.height > cutOff) {
+      fill(color("green"));
+    } else if (this.height > cutOff -0.05) {
+      fill(color("tan"));
+    } else {
+      fill(color("blue"));
     }
+    
     // fill(color(this.height*255,0,0));
     // use the tile’s own coordinates
     rect(this.x * tileSize, this.y * tileSize, tileSize, tileSize);
